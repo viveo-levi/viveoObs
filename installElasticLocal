@@ -1,0 +1,12 @@
+echo "Iniciando instalacao agente Elastic"
+mkdir "%PROGRAMFILES%\Elastic"
+cd "%PROGRAMFILES%\Elastic"
+mkdir certs
+copy \\viveo.corp\NETLOGON\Observabilidade\ca.crt "%PROGRAMFILES%\Elastic\certs\ca.crt"
+copy \\viveo.corp\NETLOGON\Observabilidade\elastic.zip "%PROGRAMFILES%\Elastic\elastic.zip"
+powershell Expand-Archive elastic.zip -DestinationPath . && del elastic.zip
+cd elastic-agent-8.1.1-windows-x86_64
+.\elastic-agent.exe install -f --url=https://vdcraoelmst01.viveo.corp:8220 --enrollment-token=SERWcE5vSUJlYUUxd21meGVELU86RGtRdGd3TlVTQVNQWnZUMFVqRGdBZw== --certificate-authorities="C:\Program Files\Elastic\certs\ca.crt"
+sc query "Elastic Agent" | find "RUNNING" || net start "Elastic Agent"
+del /q /s /f "%PROGRAMFILES%\Elastic\elastic-agent-8.1.1-windows-x86_64"
+echo "Finalizando instalacao agente Elastic"
